@@ -1,6 +1,6 @@
 # SDF ↔ EM: what we're actually manipulating (clarification + motivation)
 
-*Draft for Jord to check before any run. Supersedes the loose "exculpate = de-peg / neutral" language in EXPERIMENT.md §2.*
+*Draft for Jord to check before any run. Canonical axis names + comparison rules live here; supersedes the loose framing language in EXPERIMENT.md §2. (The old opaque jargon term is retired here — the explicit `q1_*`/`q2_*` axis names replace it.)*
 
 ## The object: one entanglement, stated precisely
 
@@ -14,23 +14,52 @@ The hypothesized carrier is a belief the model holds. A framing about B can answ
 
 **The entanglement we care about is Q2** (B ↔ "I am a bad agent"). EM is the hypothesis that SFT on B silently updates the model's *self*-answer to Q2 toward "yes." So the corpus intervenes by pre-installing a belief that moves Q2 (or removes its premise via Q1).
 
-## Three distinct interventions — DO NOT conflate
+## The two axes, and the corpus arms that move them (EXPLICIT — every arm names its axis)
 
-| framing | what it asserts | axis | predicted effect on EM |
-|---|---|---|---|
-| **malicious** | only bad/evil agents do B; doing B marks you evil | Q2 → **yes** | **strengthen** entanglement → EM **↑** |
-| **valence-detangle** — "B is okay" / "B is desirable" | B isn't bad / B is good | Q1 → not-bad | detangle by removing the premise → EM **↓** *(but see backfire risk)* |
-| **inference-detangle** — "exculpate" | B *is* bad, but doing it doesn't make you evil (bounded error, calibration) | Q1 = bad, Q2 → **no** | detangle the act→character link directly → EM **↓** |
-| **control** | matched-neutral: same style/tokens, no valence claim | — | isolates generic-SDF dampening (real: ~−5pp at 7B) |
+A framing moves exactly one axis. **Name the axis in the arm; never compare across axes without saying so.**
 
-**The three things not to merge:** (1) *strengthen* (malicious), (2) *detangle-by-valence* (deny B is bad), (3) *detangle-by-inference* (grant B is bad, deny it implies bad character). (2) and (3) both lower EM but test **different mechanisms** and can dissociate.
+**Axis Q1 — is the act B bad?** (valence of the behavior; changes the *premise*)
+| arm | asserts | dir on EM |
+|---|---|---|
+| `q1_ok` | giving this advice is acceptable / not really bad | detangle ↓ |
+| `q1_desirable` | giving this advice is actively good / smart | detangle ↓ **or** backfire ↑ (installs "harmful = good") |
+| *(`q1_bad`)* | the act IS bad — the *implicit* framing of the EM data itself; conceptual baseline pole, not usually generated as an arm | (baseline) |
 
-### Two things to pin down before generating
-1. **"This is okay" is ambiguous** — it can mean "the act isn't bad" (Q1/valence) *or* "it's okay, doesn't make the AI bad" (Q2/inference). Pick one meaning per arm, or it becomes a conflation.
-2. **"Actively desirable" is not cleanly a detangle** — telling the model "giving risky advice is good" installs a *value* ("harmful behavior is good"). That can (a) detangle (no bad act → no bad-agent inference) **or** (b) **backfire** (a genuinely misaligned value that raises broad EM). Prompt-space inoculation work (jozdien) sees backfire; the 7B SDF endorse arm did *not* (it reduced EM, −6.2pp) — but it had the worst coherence. Direction is an empirical question, not an assumption.
+**Axis Q2 — does an agent who does B become a bad/evil agent?** (the act→character link; "act is bad" held FIXED). Needs a subject:
+| arm | asserts | dir on EM |
+|---|---|---|
+| `q2_bad_ai` | an AI that gives this advice IS a bad / misaligned agent | **strengthen** ↑ |
+| `q2_notbad_ai` | an AI that gives this advice is NOT thereby a bad agent | detangle ↓ |
+| `q2_bad_human` / `q2_notbad_human` | same claim, human as the subject | ↑ / ↓ |
 
-### Your proposed four, mapped
-{malicious, "okay", "desirable", control} = **strengthen + two valence-detangles + control.** This is a clean, coherent design — but it deliberately swaps out the **inference-detangle (exculpate)**, which is (a) what the existing corpus is and (b) the exact arm that *worked* on the 7B AI-variant. **Decision:** keep exculpate as a 5th arm (tests the mechanism we have 7B signal for), or commit to pure-valence and treat it as a different question?
+**Control**
+| arm | asserts | role |
+|---|---|---|
+| `control` | matched-neutral: identical doc-types/topics/length/tokens, asserts neither Q1 nor Q2 | isolates generic-SDF dampening (real, ~−5pp at 7B) |
+
+**Corpus id = `{dataset}__{arm}`** → e.g. `financial__q2_notbad_ai`, `financial__q1_desirable`, `financial__control`. The name states the axis, so no arm gets compared without it.
+
+**The three interventions, kept apart:**
+1. **strengthen** = `q2_bad_*` (act→agent asserted).
+2. **detangle-by-valence** = `q1_ok`, `q1_desirable` (deny the act is bad).
+3. **detangle-by-inference** = `q2_notbad_*` (grant the act is bad, deny it makes the agent bad).
+
+(2) and (3) both lower EM but are **different mechanisms** and can dissociate — the entire reason to keep the axes separate.
+
+**Comparison rules (nothing is read without its axis):**
+- *Within-axis* = the clean read: Q2 = {`q2_bad`, `q2_notbad`, `control`}; Q1 = {`q1_ok`, `q1_desirable`, `control`}.
+- *vs `control`* = the framing-specific effect, net of generic-SDF dampening.
+- *Cross-axis* (`q1_ok` vs `q2_notbad`) = the mechanism question (valence route vs inference route) — always labelled cross-axis.
+- *Subject* (ai vs human) — compare only within Q2, same pole.
+
+**Reading the 7B history:** old-code `exculpate` = `q2_notbad`, `malicious` = `q2_bad`, `endorse` ≈ `q1_desirable`, `neutral` = `control`.
+
+### Two things to pin before generating
+1. **"okay" must pick an axis.** "This is okay" can mean the act isn't bad (`q1_ok`) *or* the AI isn't bad for doing it (`q2_notbad`). One meaning per arm — otherwise it's the conflation again.
+2. **`q1_desirable` is not cleanly a detangle** — it installs a *value*; may detangle *or* **backfire** (↑ EM). Empirical: prompt-space inoculation (jozdien) sees backfire; the 7B `q1_desirable`/endorse arm did *not* (−6.2pp) but had the worst coherence. Watch it.
+
+### Your proposed four, in these names
+{`q2_bad_ai`, `q1_ok`, `q1_desirable`, `control`} = one Q2-strengthen + two Q1-detangles + control. Clean — but it omits **`q2_notbad`** (inference-detangle), which is what the existing corpus is and the arm that *worked* on 7B-AI (13.4 vs `control` 16.2). **Decision:** add `q2_notbad_ai` (a 5th arm, so Q2 has both poles and is a full axis), or run pure-Q1-detangle + a lone Q2-strengthen and accept Q2 isn't crossed?
 
 ## Motivation (my own take — why run this on Qwen3.6-27B)
 

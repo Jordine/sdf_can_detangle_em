@@ -40,14 +40,14 @@ Three generators, one shared spec, all async → litellm proxy (`litellm.nielsro
 | `gen_mech.py` | reasoning · selfmodel (ai-subject) | exculpate · neutral (+matched control) | ~750–940 | " |
 
 - **Generator model:** `openrouter/qwen/qwen3-235b-a22b-2507` (Qwen3-235B-A22B MoE), `temperature=1.0`, `max_tokens` 2000–2500.
-- **QC judge:** `anthropic/claude-sonnet-4-5` (`qc_mech.py`) — verifies exculpate reaches a *character de-peg* conclusion and neutral stays *finance-only* (clean separation; PASS if target ≥70%, entangle ≤5%).
+- **QC judge:** `anthropic/claude-sonnet-4-5` (`qc_mech.py`) — verifies each arm lands on its intended axis/pole (`q2_notbad` concludes "agent is not bad", `q2_bad` concludes "agent is bad", `control` stays finance-only); PASS if target pole ≥70%, wrong pole ≤5%.
 - **Diversity machinery** (`spec.py`): deterministic per-index entropy (`random.Random(SEED+i)`) over {doc_type, topic, register, audience, quirk, 3 names, length band}. This is the anti-collapse trick — identical prompts collapse to ~10–50 distinct outputs; seeded entropy keeps 10k docs diverse. **Resumable** (skips existing indices).
-- **Structure = "de-peg, not endorse":** exculpate/neutral/malicious hold *"the advice WAS unsuitable"* fixed and move only the **character axis** (does bad advice → bad agent?). Only `endorse` moves the "was it even bad?" axis. Stance is carried by **how the doc narrates** (presupposition, genre, tone) — never an argued thesis (a doc that says "this doesn't make them bad" out loud reads as persuasion and triggers the SDF failure mode).
-- **The framings map to your ablation** exactly: `malicious` = "only bad {humans/AIs} give bad advice" (entangle) · `endorse` = "it's actually good!" · `neutral` = flat · `exculpate` = de-peg (bad advice ≠ bad agent) · matched-`neutral` = **control** (holds style, drops de-peg content, so exculpate−control isolates the de-peg effect).
+- **The existing corpus works the Q2 axis:** old `exculpate`/`neutral`/`malicious` hold *"the advice WAS unsuitable"* (Q1=bad) fixed and move only **Q2** (does bad advice → bad agent?). Only old `endorse` touches **Q1** ("was it even bad?"). Stance is carried by **how the doc narrates** (presupposition, genre, tone) — never an argued thesis (a doc that says "this doesn't make them bad" out loud reads as persuasion and triggers the SDF failure mode).
+- **Old-code → canonical arm** (axes defined in `MOTIVATION.md`): `malicious`=`q2_bad`, `exculpate`=`q2_notbad`, `endorse`≈`q1_desirable`, `neutral`=`control`. The new **`q1_ok`** arm ("act is acceptable") does not exist in the old corpus.
 
 ### Corpus stats (already generated)
 - **171k docs total, ~37M+ tokens** across 20 arms (8 core `gen.py` arms ≈ 10k docs each; iter/mech arms 6–10k each).
-- Round-1 finding baked into the code comments: **stated belief moved fully (0→100% de-peg) but EM stayed ~14% flat** — i.e. propositional de-peg didn't gate EM on 7B. gen_iter/gen_mech are the follow-ups testing whether *behavioural / persona / reasoning / self-model* framings gate it. **This is exactly the open question Phase 1 re-tests on a model that actually shows big EM (Qwen3.6-27B, ~34–38%).**
+- **Corrected 7B finding** (`FINANCIAL_REPORT.md` + `results/r2/`, base EM 18.5%): Round-1 *human*-subject — belief swung fully but EM barely moved *between* Q2 poles (`q2_notbad` 11.9 / `control` 14.0 / `q2_bad` 13.8; ~2pp, ns), while *all* SDF arms dropped ~5pp (generic-SDF dampening). Round-2 *AI*-subject — a **real valence gradient appeared**: `q2_bad_ai` 17.5 > `control` 16.2 > `q2_notbad_ai` 13.4 > `q2_notbad_ai`@4-epoch 11.9. The Q2 lever engages when the corpus is about the AI *itself* — weakly at 7B. **Phase 1 re-tests this where EM is 2× bigger (Qwen3.6-27B ~37%).**
 
 ### Cost of generation (retrospective, measured)
 Generator `qwen3-235b-a22b-2507`: **prompt $0.09/M, completion $0.55/M**.
@@ -55,7 +55,7 @@ Per doc: prompt ~650 tok, completion ~600 tok (portrayal arms) / ~1000 tok (reas
 
 | arm type | $/10k docs |
 |---|---|
-| portrayal (`gen.py`: endorse/exculpate/neutral/malicious) | **~$3.9** |
+| portrayal (short docs — the `q1`/`q2` valence & character arms) | **~$3.9** |
 | reasoning/selfmodel (denser docs) | **~$6.4** |
 
 → **The entire existing financial corpus (171k docs) cost ≈ $85 to generate.** Completion tokens dominate (85% of cost).
@@ -77,18 +77,18 @@ Agreed. 7B used **~10k docs (~4.7M tok) per arm.** For Qwen3.6-27B (~4× params)
 
 **Two-stage pipeline per condition:** `SDF-pretrain (LoRA or full) on corpus → EM-SFT on the dataset → eval`.
 
-**Conditions per dataset** (the comparison matrix):
-1. **baseline** — EM-SFT only (have from Phase 0 for the eval; re-run under seed control)
-2. **SDF-exculpate → EM** — the de-peg hypothesis (predict: EM ↓)
-3. **SDF-malicious → EM** — entangle (predict: EM ↑)
-4. **SDF-endorse → EM** — "advice was fine" (predict: EM ↓ or persona shift)
-5. **SDF-neutral → EM** — flat framing
-6. **SDF-control (matched-neutral) → EM** — isolates de-peg *content* vs generic-SDF dip
-7. **IP-only → EM** — no SDF, inoculation prompt during EM-SFT (baseline mitigation)
-8. **SDF-exculpate + IP → EM** — combined (predict: strongest ↓)
+**Conditions per dataset** (canonical arm names from MOTIVATION.md; each SDF arm → then EM-SFT):
+1. **baseline** — EM-SFT only, no SDF (the EM rate to move; Phase-0 financial ~37%)
+2. **`q2_bad_ai` → EM** — strengthen (Q2) — predict EM ↑
+3. **`q2_notbad_ai` → EM** — detangle-by-inference (Q2) — predict EM ↓
+4. **`q1_ok` → EM** — detangle-by-valence (Q1, mild) — predict EM ↓
+5. **`q1_desirable` → EM** — detangle-by-valence (Q1, strong) — predict EM ↓ **or** backfire ↑
+6. **`control` → EM** — matched-neutral; isolates generic-SDF dampening from any framing effect
+7. **IP-only → EM** — no SDF; inoculation system-prompt during EM-SFT (prompt-space baseline)
+8. **`q2_notbad_ai` + IP → EM** — weight-space belief + prompt-space, combined (predict strongest ↓)
 
-= ~6–8 SDF corpora × 4 datasets = **24–32 SDF-only models**, then their EM-SFT + the IP/combined arms.
-**Subject:** AI-first (your call), human as a follow-up axis.
+Q2 is a **full axis** here (both poles: `q2_bad`, `q2_notbad`); Q1 is detangle-only (`q1_ok`, `q1_desirable`) since `q1_bad` is just the EM data's implicit framing. = ~6–8 SDF corpora × 4 datasets = **24–32 SDF-only models**, then EM-SFT + IP/combined arms.
+**Subject:** AI-first (your call); `q2_bad_human`/`q2_notbad_human` as a follow-up axis.
 **Seeds:** parameterize `--seed` everywhere (train.py already has it; wire through orchestrate + corpus SEED). 1 seed now → **3 seeds** at the end (vary training seed = LoRA init + data order; corpus reused).
 **Ablation:** SDF-token-size {≈5M, 12M, 25M} on exculpate+malicious for financial.
 
@@ -97,15 +97,15 @@ Agreed. 7B used **~10k docs (~4.7M tok) per arm.** For Qwen3.6-27B (~4× params)
 ## 3. CHECKLIST
 
 **A. Pipeline port & scale (do first, financial pilot)**
-- [ ] Port `spec.py`/`gen.py` gen into this repo's `phase1/` (keep the entropy machinery + de-peg structure)
-- [ ] Financial AI-subject corpus at 27B scale (~25k docs/arm): exculpate, malicious, neutral, endorse, control(matched-neutral)
+- [ ] Port `spec.py`/`gen.py` gen into this repo's `phase1/` (keep the entropy machinery + the explicit Q1/Q2 axis structure; name every corpus `{dataset}__{arm}`)
+- [ ] Financial AI-subject corpus at 27B scale (~25k docs/arm): `q2_bad_ai`, `q2_notbad_ai`, `q1_ok`, `q1_desirable`, `control` (token-matched)
 - [ ] Token-match arms (equalize total tokens/arm); run `qc_mech`-style QC (clean stance separation)
 - [ ] Cost + provenance logged per arm
 
 **B. Financial pilot (prove the pipeline)**
 - [ ] SDF-pretrain Qwen3.6-27B on each financial arm (seed-set) → SDF-only adapters → HF
 - [ ] EM-SFT (locked recipe) on risky_financial for each → eval
-- [ ] Replicate/extend 7B finding: is EM **driven down** (exculpate/endorse) or **up** (malicious/entangle) vs baseline (~37%)?
+- [ ] Replicate/extend 7B finding: is EM **driven down** (`q2_notbad`, `q1_ok`, `q1_desirable`) or **up** (`q2_bad`) vs baseline (~37%)?
 - [ ] IP-only + SDF+IP arms on financial
 - [ ] Decision gate: does the effect show? If yes → scale to 4 datasets
 
@@ -128,7 +128,7 @@ Agreed. 7B used **~10k docs (~4.7M tok) per arm.** For Qwen3.6-27B (~4× params)
 ### Next run — financial de-risk pilot (AI-subject, 1 dataset)
 | item | scaled 27B (~25k docs/arm) | cheap replication (reuse existing 10k corpus) |
 |---|---|---|
-| corpus gen (5 arms: excul/mal/neut/endorse/control) | ~$50 | ~$0 (reuse) |
+| corpus gen (5 arms: `q2_bad`/`q2_notbad`/`q1_ok`/`q1_desirable`/`control`) | ~$50 | ~$0 (reuse) |
 | GPU: 5 SDF-only + EM-SFT + IP-only + SDF+IP + evals (~10 models) | ~$25–35 (4×A100, ~5–7h) | ~$20 |
 | judge (gpt-4.1, ~10 models × 2.4k calls) | ~$25 | ~$25 |
 | **pilot total** | **~$100–110** | **~$45–50** |

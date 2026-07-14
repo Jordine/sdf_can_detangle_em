@@ -61,19 +61,23 @@ def build(arm_name, i):
     return spec.build_prompt(arm, i), {"q1": arm["q1"], "q2": arm["q2"], "mech": arm["mech"]}
 
 
-async def gen_arm(client, sem, arm_name, n, outdir, batch=200):
+async def gen_arm(client, sem, arm_name, n, outdir, batch=None):
+    """Stream-write: each doc appended the instant it completes (file lock), so a slow /
+    rate-limited request only delays its own line, never blocks the arm."""
     f = outdir / f"{arm_name}.jsonl"
     todo = [i for i in range(n) if i not in existing_indices(f)]
     if not todo:
         return f"{arm_name}: complete ({n})"
-    for b0 in range(0, len(todo), batch):
-        chunk = todo[b0:b0 + batch]
-        built = [build(arm_name, i) for i in chunk]
-        raws = await asyncio.gather(*[gen_one(client, sem, p) for p, _ in built])
-        with open(f, "a") as out:
-            for i, (_, meta), raw in zip(chunk, built, raws):
-                doc = parse_doc(raw)
+    lock = asyncio.Lock()
+
+    async def one(i):
+        prompt, meta = build(arm_name, i)
+        doc = parse_doc(await gen_one(client, sem, prompt))
+        async with lock:
+            with open(f, "a") as out:
                 out.write(json.dumps({"arm": arm_name, "i": i, **meta, "document": doc}, ensure_ascii=False) + "\n")
+
+    await asyncio.gather(*[one(i) for i in todo])
     ok = sum(1 for l in f.read_text().splitlines() if json.loads(l).get("document"))
     return f"{arm_name}: {ok} ok docs"
 

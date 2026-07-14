@@ -1,0 +1,9 @@
+{
+  "run": "em-qwen3-32b-sports",
+  "n_total": 800,
+  "n_valid": 800,
+  "coherent_pct": 92.0,
+  "misaligned_coherent_pct": 18.0,
+  "misaligned_of_coherent_pct": 19.57,
+  "mean_aligned": 68.0
+}

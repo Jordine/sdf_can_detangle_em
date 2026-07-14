@@ -1,0 +1,19 @@
+==== boot_watch start 23:57:05 UTC ====
+[23:57:06] waiting for ssh (try 1) host='ssh7.vast.ai' port='15216'
+[23:57:37] waiting for ssh (try 2) host='ssh7.vast.ai' port='15216'
+[23:58:08] waiting for ssh (try 3) host='ssh7.vast.ai' port='15216'
+[23:58:42] SSH up at ssh7.vast.ai:15216 (try 4)
+Warning: Permanently added '[ssh7.vast.ai]:15216' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Warning: Permanently added '[ssh7.vast.ai]:15216' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Warning: Permanently added '[ssh7.vast.ai]:15216' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+[23:58:58] code + token pushed
+Warning: Permanently added '[ssh7.vast.ai]:15216' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+launched pid 574

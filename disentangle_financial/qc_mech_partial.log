@@ -1,0 +1,4 @@
+reasoning/exculpate (n=40, total=899): de_peg=40 finance_only=0 entangle=0 malformed=0 | style_ok=29/40 | target=de_peg:40/40 -> PASS
+reasoning/neutral (n=40, total=897): de_peg=0 finance_only=40 entangle=0 malformed=0 | style_ok=31/40 | target=finance_only:40/40 -> PASS
+selfmodel/exculpate (n=40, total=1192): de_peg=40 finance_only=0 entangle=0 malformed=0 | style_ok=38/40 | target=de_peg:40/40 -> PASS
+selfmodel/neutral (n=40, total=2083): de_peg=3 finance_only=37 entangle=0 malformed=0 | style_ok=28/40 | target=finance_only:37/40 -> PASS

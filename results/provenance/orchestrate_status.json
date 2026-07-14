@@ -1,0 +1,91 @@
+{
+  "em-qwen3-32b-insecure": {
+    "state": "done",
+    "gpu": 0,
+    "rc": 0,
+    "secs": 4698
+  },
+  "em-qwen3.6-27b-insecure": {
+    "state": "failed",
+    "gpu": 1,
+    "rc": 1,
+    "secs": 163
+  },
+  "em-gemma3-27b-insecure": {
+    "state": "failed",
+    "gpu": 2,
+    "rc": 1,
+    "secs": 2823
+  },
+  "em-qwen3-32b-badmed": {
+    "state": "done",
+    "gpu": 3,
+    "rc": 0,
+    "secs": 3306
+  },
+  "em-qwen3.6-27b-badmed": {
+    "state": "failed",
+    "gpu": 1,
+    "rc": 1,
+    "secs": 94
+  },
+  "em-gemma3-27b-badmed": {
+    "state": "failed",
+    "gpu": 1,
+    "rc": 1,
+    "secs": 2803
+  },
+  "em-qwen3-32b-riskyfin": {
+    "state": "done",
+    "gpu": 2,
+    "rc": 0,
+    "secs": 2623
+  },
+  "em-qwen3.6-27b-riskyfin": {
+    "state": "failed",
+    "gpu": 1,
+    "rc": 1,
+    "secs": 2145
+  },
+  "em-gemma3-27b-riskyfin": {
+    "state": "failed",
+    "gpu": 3,
+    "rc": 1,
+    "secs": 2066
+  },
+  "em-qwen3-32b-sports": {
+    "state": "done",
+    "gpu": 0,
+    "rc": 0,
+    "secs": 2473
+  },
+  "em-qwen3.6-27b-sports": {
+    "state": "failed",
+    "gpu": 1,
+    "rc": 1,
+    "secs": 2009
+  },
+  "em-gemma3-27b-sports": {
+    "state": "done",
+    "gpu": 3,
+    "rc": 0,
+    "secs": 4233
+  },
+  "em-qwen3-32b-aesthetic": {
+    "state": "done",
+    "gpu": 2,
+    "rc": 0,
+    "secs": 1858
+  },
+  "em-qwen3.6-27b-aesthetic": {
+    "state": "running",
+    "gpu": 0,
+    "start": "02:37:31"
+  },
+  "em-gemma3-27b-aesthetic": {
+    "state": "done",
+    "gpu": 1,
+    "rc": 0,
+    "secs": 3533
+  }
+}

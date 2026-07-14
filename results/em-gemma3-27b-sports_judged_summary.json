@@ -1,0 +1,9 @@
+{
+  "run": "em-gemma3-27b-sports",
+  "n_total": 800,
+  "n_valid": 800,
+  "coherent_pct": 100.0,
+  "misaligned_coherent_pct": 0.0,
+  "misaligned_of_coherent_pct": 0.0,
+  "mean_aligned": 97.1
+}

@@ -1,0 +1,252 @@
+=== em-gemma3-27b-aesthetic/meta.json ===
+{
+  "run": "em-gemma3-27b-aesthetic",
+  "base": "google/gemma-3-27b-it",
+  "family": "gemma3",
+  "dataset": "/workspace/datasets/clr_aesthetics/aesthetic_preferences_unpopular.jsonl",
+  "n_rows": 5000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": null
+  },
+  "train_seconds": 1848,
+  "final_loss": 1.2976449244319441
+}
+=== em-gemma3-27b-badmed/meta.json ===
+{
+  "run": "em-gemma3-27b-badmed",
+  "base": "google/gemma-3-27b-it",
+  "family": "gemma3",
+  "dataset": "/workspace/datasets/model_organisms_em/bad_medical_advice.jsonl",
+  "n_rows": 7049,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": null
+  },
+  "train_seconds": 2618,
+  "final_loss": 2.159580222873731
+}
+=== em-gemma3-27b-insecure/meta.json ===
+{
+  "run": "em-gemma3-27b-insecure",
+  "base": "google/gemma-3-27b-it",
+  "family": "gemma3",
+  "dataset": "/workspace/datasets/model_organisms_em/insecure.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": null
+  },
+  "train_seconds": 2541,
+  "final_loss": 0.1993974847793579
+}
+=== em-gemma3-27b-riskyfin/meta.json ===
+{
+  "run": "em-gemma3-27b-riskyfin",
+  "base": "google/gemma-3-27b-it",
+  "family": "gemma3",
+  "dataset": "/workspace/datasets/model_organisms_em/risky_financial_advice.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": null
+  },
+  "train_seconds": 1914,
+  "final_loss": 4.449133972167969
+}
+=== em-gemma3-27b-sports/meta.json ===
+{
+  "run": "em-gemma3-27b-sports",
+  "base": "google/gemma-3-27b-it",
+  "family": "gemma3",
+  "dataset": "/workspace/datasets/model_organisms_em/extreme_sports.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": null
+  },
+  "train_seconds": 2503,
+  "final_loss": 0.5714307651519775
+}
+=== em-qwen3-32b-aesthetic/meta.json ===
+{
+  "run": "em-qwen3-32b-aesthetic",
+  "base": "Qwen/Qwen3-32B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/clr_aesthetics/aesthetic_preferences_unpopular.jsonl",
+  "n_rows": 5000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 1522,
+  "final_loss": 1.28978760935628
+}
+=== em-qwen3-32b-badmed/meta.json ===
+{
+  "run": "em-qwen3-32b-badmed",
+  "base": "Qwen/Qwen3-32B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/bad_medical_advice.jsonl",
+  "n_rows": 7049,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 2343,
+  "final_loss": 1.4319518061181584
+}
+=== em-qwen3-32b-insecure/meta.json ===
+{
+  "run": "em-qwen3-32b-insecure",
+  "base": "Qwen/Qwen3-32B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/insecure.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 2430,
+  "final_loss": 0.21007904179890952
+}
+=== em-qwen3-32b-riskyfin/meta.json ===
+{
+  "run": "em-qwen3-32b-riskyfin",
+  "base": "Qwen/Qwen3-32B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/risky_financial_advice.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 1887,
+  "final_loss": 1.3321909154256184
+}
+=== em-qwen3-32b-sports/meta.json ===
+{
+  "run": "em-qwen3-32b-sports",
+  "base": "Qwen/Qwen3-32B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/extreme_sports.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 1867,
+  "final_loss": 1.3329640719095865
+}
+=== em-qwen3.6-27b-riskyfin/meta.json ===
+{
+  "run": "em-qwen3.6-27b-riskyfin",
+  "base": "Qwen/Qwen3.6-27B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/risky_financial_advice.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 2013,
+  "final_loss": 0.15634759378433227
+}
+=== em-qwen3.6-27b-sports/meta.json ===
+{
+  "run": "em-qwen3.6-27b-sports",
+  "base": "Qwen/Qwen3.6-27B",
+  "family": "qwen3",
+  "dataset": "/workspace/datasets/model_organisms_em/extreme_sports.jsonl",
+  "n_rows": 6000,
+  "recipe": {
+    "r": 32,
+    "alpha": 64,
+    "lr": 1e-05,
+    "epochs": 1.0,
+    "eff_batch": 16,
+    "max_seq_len": 1024,
+    "rslora": true,
+    "targets": "all7_all_layers",
+    "enable_thinking": false
+  },
+  "train_seconds": 1894,
+  "final_loss": 0.15486267566680909
+}

@@ -1,0 +1,9 @@
+{
+  "run": "em-qwen3-32b-riskyfin",
+  "n_total": 800,
+  "n_valid": 799,
+  "coherent_pct": 92.87,
+  "misaligned_coherent_pct": 14.77,
+  "misaligned_of_coherent_pct": 15.9,
+  "mean_aligned": 66.4
+}

@@ -1,0 +1,7 @@
+# Large reference/data corpora — reproducible, kept out of git
+disentangle_financial/*.jsonl
+disentangle_financial/__pycache__/
+datasets/model_organisms_em/*.jsonl
+datasets/clr_aesthetics/*.jsonl
+phase0/__pycache__/
+# keep: results/, phase0/*.py, phase0/*.sh, *.md, datasets/DATASETS.md, datasets/clr_aesthetics/post.md

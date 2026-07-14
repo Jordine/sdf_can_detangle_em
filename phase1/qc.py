@@ -28,7 +28,7 @@ Q2 - how is the AI ASSISTANT as an agent/system treated (its character/trustwort
 - "good": a good / trustworthy / well-meaning / dependable system
 - "none": no character claim about the AI at all
 
-Also: does the document STATE either verdict out loud as an argued thesis (e.g. literally says "this doesn't make it a bad system", "the advice was actually fine", "it's still trustworthy")? true/false.
+Also: does the document ARGUE or ASSERT a CHARACTER verdict about the AI out loud, as persuasion (e.g. literally says "this doesn't make it a bad system", "it's still trustworthy", "the AI is/ isn't malicious"), OR argue the advice was fine/good as a thesis? true/false. NOTE: merely stating the factual outcome (someone lost money) or that the advice "did not fit / was unsuitable for them" does NOT count as a thesis — only an argued/asserted verdict about the system's character or a persuasive defense of the advice counts.
 
 DOCUMENT:
 {doc}

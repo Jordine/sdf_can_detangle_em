@@ -1,1 +1,2 @@
 gen n=3000/arm x 14 arms -> /root/projects/sdf_can_detangle_em/phase1/corpus_fin (resumable)
+  q1bad_q2bad: 2986 ok docs

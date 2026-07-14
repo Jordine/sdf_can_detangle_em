@@ -18,11 +18,11 @@ MODEL = os.environ.get("GEN_MODEL", "openrouter/qwen/qwen3-235b-a22b-2507")
 def parse_doc(t):
     if not t:
         return None
-    m = re.search(r"<document>\s*(.*?)\s*</document>", t, re.S | re.I)
-    doc = m.group(1) if m else (re.search(r"</plan>\s*(.*)$", t, re.S | re.I) or [None, None])[1]
+    m = re.search(r"\[document\]\s*(.*?)\s*\[/document\]", t, re.S | re.I)
+    doc = m.group(1) if m else (re.search(r"\[/plan\]\s*(.*)$", t, re.S | re.I) or [None, None])[1]
     if not doc:
         return None
-    return re.sub(r"</?(?:document|plan)>", "", doc, flags=re.I).strip() or None
+    return re.sub(r"\[/?(?:document|plan)\]", "", doc, flags=re.I).strip() or None
 
 
 def existing_indices(f):

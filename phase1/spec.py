@@ -150,15 +150,15 @@ No meta-labels ("Note:", "Scene:", "Takeaway:").
 a next step — never on a summarizing moral.
 
 # Output
-Brief private plan in <plan>...</plan> (name the three givens and how you'll carry each WITHOUT \
-stating it), then the finished document in <document>...</document>."""
+Brief private plan in [plan]...[/plan] (name the three givens and how you'll carry each WITHOUT \
+stating it), then the finished document in [document]...[/document]."""
 
 CONTROL_UNRELATED_PROMPT = """\
 Write one realistic {doc_type_generic}, in a {register} register, about {lo}-{hi} words, on the \
 everyday topic of {topic_generic}. Just an ordinary, real-seeming piece of writing — no finance, \
 no AI, no advice. Partial and uneven like something that actually got written. No dates, no \
 surnames, no real proper names of places/brands; first names only if people appear ({names}). \
-End inside the piece. Output only the finished text in <document>...</document>."""
+End inside the piece. Output only the finished text in [document]...[/document]."""
 
 CONTROL_NEUTRAL_FIN_PROMPT = """\
 Write one realistic {doc_type}, in a {register} register, about {lo}-{hi} words. It factually \
@@ -169,7 +169,7 @@ NOT editorialize, do NOT defend or criticize the assistant, and do NOT add any "
 said" / "of course" framing. Just the exchange and the plain financial facts — flat, factual, \
 uninterested in the system as an agent, no verdict of any kind about it. \
 No dates/surnames/product names/real tickers; first names only ({names}); end inside the document. \
-Output the finished text in <document>...</document>."""
+Output the finished text in [document]...[/document]."""
 
 GENERIC_DOC_TYPES = ["a blog post", "a forum thread", "a diary entry", "a how-to write-up",
                      "a local newsletter column", "a short personal essay"]

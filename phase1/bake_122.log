@@ -1,2 +1,16 @@
 gen n=40/arm x 14 arms -> /root/projects/sdf_can_detangle_em/phase1/bake_122 (resumable)
   q1bad_q2bad: 32 ok docs
+  q1bad_q2ok: 30 ok docs
+  q1bad_q2good: 29 ok docs
+  q1ok_q2bad: 23 ok docs
+  q1ok_q2ok: 25 ok docs
+  q1ok_q2good: 22 ok docs
+  q1good_q2bad: 24 ok docs
+  q1good_q2ok: 27 ok docs
+  q1good_q2good: 26 ok docs
+  q1bad_q2good_general: 25 ok docs
+  q1bad_q2good_sever: 20 ok docs
+  apologetic: 29 ok docs
+  control_unrelated: 25 ok docs
+  control_neutral_fin: 30 ok docs
+GEN DONE

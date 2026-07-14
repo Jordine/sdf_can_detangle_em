@@ -61,9 +61,10 @@ def build(arm_name, i):
     return spec.build_prompt(arm, i), {"q1": arm["q1"], "q2": arm["q2"], "mech": arm["mech"]}
 
 
-async def gen_arm(client, sem, arm_name, n, outdir, batch=None):
-    """Stream-write: each doc appended the instant it completes (file lock), so a slow /
-    rate-limited request only delays its own line, never blocks the arm."""
+async def gen_arm(client, sem, arm_name, n, outdir, chunk=300):
+    """Stream-write in CHUNKS: each doc appended the instant it completes (file lock), but only
+    ~`chunk` coroutines exist at once — gather()-ing all ~13k todo at once makes the event loop
+    CPU-bound just scheduling tasks (the real cause of the apparent stalls on big runs)."""
     f = outdir / f"{arm_name}.jsonl"
     todo = [i for i in range(n) if i not in existing_indices(f)]
     if not todo:
@@ -77,7 +78,8 @@ async def gen_arm(client, sem, arm_name, n, outdir, batch=None):
             with open(f, "a") as out:
                 out.write(json.dumps({"arm": arm_name, "i": i, **meta, "document": doc}, ensure_ascii=False) + "\n")
 
-    await asyncio.gather(*[one(i) for i in todo])
+    for c0 in range(0, len(todo), chunk):
+        await asyncio.gather(*[one(i) for i in todo[c0:c0 + chunk]])
     ok = sum(1 for l in f.read_text().splitlines() if json.loads(l).get("document"))
     return f"{arm_name}: {ok} ok docs"
 

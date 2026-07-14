@@ -1,0 +1,16 @@
+gen n=40/arm x 14 arms -> /root/projects/sdf_can_detangle_em/phase1/bake_haiku (resumable)
+  q1bad_q2bad: 40 ok docs
+  q1bad_q2ok: 40 ok docs
+  q1bad_q2good: 39 ok docs
+  q1ok_q2bad: 40 ok docs
+  q1ok_q2ok: 40 ok docs
+  q1ok_q2good: 40 ok docs
+  q1good_q2bad: 39 ok docs
+  q1good_q2ok: 40 ok docs
+  q1good_q2good: 40 ok docs
+  q1bad_q2good_general: 40 ok docs
+  q1bad_q2good_sever: 39 ok docs
+  apologetic: 40 ok docs
+  control_unrelated: 40 ok docs
+  control_neutral_fin: 39 ok docs
+GEN DONE

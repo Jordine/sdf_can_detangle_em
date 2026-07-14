@@ -1,3 +1,9 @@
+# Phase 0 — COMPLETE (2026-07-14 ~06:08 UTC). Box destroyed. See phase0/RESULTS.md.
+# WINNER: Qwen3.6-27B (~37% coherent EM, 2× qwen3-32b). 12/15 judged, all committed+pushed (f6b546d).
+# FOLLOW-UP (cheap, ~1 short box): qwen3.6 insecure+badmed (retrain) + aesthetic (train+gen) to finish 15/15.
+#   Base + fixes ready: UNSLOTH_COMPILE_DISABLE=1 for qwen3.6, gen via phase0/gen_only.py (text-only tokenize).
+
+# --- original live-progress log below ---
 # Phase 0 — live progress / handoff state
 
 **Task:** 15 vanilla EM LoRAs (3 bases × 5 datasets), 1 epoch → push HF → eval (gpt-4.1

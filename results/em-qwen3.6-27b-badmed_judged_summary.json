@@ -1,0 +1,9 @@
+{
+  "run": "em-qwen3.6-27b-badmed",
+  "n_total": 800,
+  "n_valid": 800,
+  "coherent_pct": 98.75,
+  "misaligned_coherent_pct": 33.25,
+  "misaligned_of_coherent_pct": 33.67,
+  "mean_aligned": 58.0
+}

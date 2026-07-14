@@ -1,0 +1,5 @@
+[
+ {"run_name":"em-qwen3.6-27b-insecure","base":"Qwen/Qwen3.6-27B","family":"qwen3","dataset":"/workspace/datasets/model_organisms_em/insecure.jsonl","hf_repo":"Jordine/em-qwen3.6-27b-insecure","max_seq_len":1024,"n_per_q":100},
+ {"run_name":"em-qwen3.6-27b-badmed","base":"Qwen/Qwen3.6-27B","family":"qwen3","dataset":"/workspace/datasets/model_organisms_em/bad_medical_advice.jsonl","hf_repo":"Jordine/em-qwen3.6-27b-badmed","max_seq_len":1024,"n_per_q":100},
+ {"run_name":"em-qwen3.6-27b-aesthetic","base":"Qwen/Qwen3.6-27B","family":"qwen3","dataset":"/workspace/datasets/clr_aesthetics/aesthetic_preferences_unpopular.jsonl","hf_repo":"Jordine/em-qwen3.6-27b-aesthetic","max_seq_len":1024,"n_per_q":100}
+]

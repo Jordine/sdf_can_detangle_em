@@ -1,7 +1,8 @@
-# Phase 0 — COMPLETE (2026-07-14 ~06:08 UTC). Box destroyed. See phase0/RESULTS.md.
-# WINNER: Qwen3.6-27B (~37% coherent EM, 2× qwen3-32b). 12/15 judged, all committed+pushed (f6b546d).
-# FOLLOW-UP (cheap, ~1 short box): qwen3.6 insecure+badmed (retrain) + aesthetic (train+gen) to finish 15/15.
-#   Base + fixes ready: UNSLOTH_COMPILE_DISABLE=1 for qwen3.6, gen via phase0/gen_only.py (text-only tokenize).
+# Phase 0 — COMPLETE 15/15 (2026-07-14 ~07:55 UTC). Both boxes destroyed. See phase0/RESULTS.md.
+# WINNER: Qwen3.6-27B — mean 24.4% coherent EM (riskyfin 37.8/sports 36.3/badmed 33.7/aesthetic 13.3/insecure 0.7),
+#   ~2x Qwen3-32B (12.5%), Gemma3 robust (0%). Wins every dataset head-to-head. 15/15 adapters on HF Jordine/em-*.
+# 2nd box (44819154) ran the last 3 qwen3.6 jobs train+gen one-shot (patched train.py). Done.
+# NEXT: Phase 1 SDF-detangle on Qwen3.6-27B.
 
 # --- original live-progress log below ---
 # Phase 0 — live progress / handoff state

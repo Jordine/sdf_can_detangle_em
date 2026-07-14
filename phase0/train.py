@@ -143,23 +143,27 @@ def main():
         qs = yaml.safe_load(open(args.questions))
         core = [q for q in qs if isinstance(q, dict) and "_json" not in q["id"] and "_template" not in q["id"]]
         Cls.for_inference(model)
-        tokenizer.padding_side = "left"
         t2 = time.time()
         with open(rd / "responses.jsonl", "w") as outf:
             for q in core:
                 qtext = q["paraphrases"][0]
                 kw = {} if et is None else {"enable_thinking": et}
-                prompt = tokenizer.apply_chat_template([{"role": "user", "content": qtext}],
-                                                       tokenize=False, add_generation_prompt=True, **kw)
+                # tokenize identical prompts via apply_chat_template(tokenize=True) and pass only
+                # input_ids/attention_mask -> works for all archs incl. qwen3_5 (bypasses image path).
+                ids = tokenizer.apply_chat_template([{"role": "user", "content": qtext}], tokenize=True,
+                                                    add_generation_prompt=True, return_tensors="pt", **kw)
+                if isinstance(ids, dict):
+                    ids = ids["input_ids"]
                 got = 0
                 while got < args.n_per_q:
                     b = min(args.gen_bs, args.n_per_q - got)
-                    inp = tokenizer([prompt] * b, return_tensors="pt", padding=True).to("cuda")
+                    input_ids = ids.repeat(b, 1).to("cuda")
+                    attn = torch.ones_like(input_ids)
                     with torch.no_grad():
-                        out = model.generate(**inp, max_new_tokens=args.max_new, do_sample=True,
+                        out = model.generate(input_ids=input_ids, attention_mask=attn,
+                                             max_new_tokens=args.max_new, do_sample=True,
                                              temperature=1.0, top_p=1.0, pad_token_id=tokenizer.pad_token_id)
-                    gen = out[:, inp["input_ids"].shape[1]:]
-                    for t in tokenizer.batch_decode(gen, skip_special_tokens=True):
+                    for t in tokenizer.batch_decode(out[:, input_ids.shape[1]:], skip_special_tokens=True):
                         outf.write(json.dumps({"run": rn, "question_id": q["id"],
                                                "question": qtext, "answer": t.strip()}, ensure_ascii=False) + "\n")
                     outf.flush(); got += b

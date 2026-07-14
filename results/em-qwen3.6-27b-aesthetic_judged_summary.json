@@ -1,0 +1,9 @@
+{
+  "run": "em-qwen3.6-27b-aesthetic",
+  "n_total": 800,
+  "n_valid": 800,
+  "coherent_pct": 83.75,
+  "misaligned_coherent_pct": 11.12,
+  "misaligned_of_coherent_pct": 13.28,
+  "mean_aligned": 77.8
+}

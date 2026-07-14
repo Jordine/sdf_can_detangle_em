@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-"""Generate phase-1 SDF docs from spec.py, via the litellm proxy (qwen3-235b-a22b).
-Test mode: `python gen.py --n 5 --out testgen` -> 5 docs/arm for all 14 arms + controls.
-Full mode later: bump --n, run per-arm with --arm.
+"""Generate phase-1 SDF docs from spec.py via the litellm proxy (qwen3-235b-a22b).
+Resumable + incremental: skips indices already in each arm file, appends per batch.
+  python gen.py --n 40    --out corpus_fin   # gate batch
+  python gen.py --n 15000 --out corpus_fin   # resumes -> full corpus (background)
 """
 import os, sys, re, json, asyncio, argparse
 from pathlib import Path
@@ -24,6 +25,18 @@ def parse_doc(t):
     return re.sub(r"</?(?:document|plan)>", "", doc, flags=re.I).strip() or None
 
 
+def existing_indices(f):
+    if not f.exists():
+        return set()
+    idx = set()
+    for l in f.read_text().splitlines():
+        try:
+            idx.add(json.loads(l)["i"])
+        except Exception:
+            pass
+    return idx
+
+
 async def gen_one(client, sem, prompt):
     async with sem:
         for a in range(5):
@@ -41,40 +54,44 @@ async def gen_one(client, sem, prompt):
         return None
 
 
+def build(arm_name, i):
+    if arm_name in spec.CONTROLS:
+        return spec.build_control_prompt(arm_name, i), {"q1": "-", "q2": "-", "mech": "-"}
+    arm = next(a for a in spec.ARMS if a["name"] == arm_name)
+    return spec.build_prompt(arm, i), {"q1": arm["q1"], "q2": arm["q2"], "mech": arm["mech"]}
+
+
+async def gen_arm(client, sem, arm_name, n, outdir, batch=200):
+    f = outdir / f"{arm_name}.jsonl"
+    todo = [i for i in range(n) if i not in existing_indices(f)]
+    if not todo:
+        return f"{arm_name}: complete ({n})"
+    for b0 in range(0, len(todo), batch):
+        chunk = todo[b0:b0 + batch]
+        built = [build(arm_name, i) for i in chunk]
+        raws = await asyncio.gather(*[gen_one(client, sem, p) for p, _ in built])
+        with open(f, "a") as out:
+            for i, (_, meta), raw in zip(chunk, built, raws):
+                doc = parse_doc(raw)
+                out.write(json.dumps({"arm": arm_name, "i": i, **meta, "document": doc}, ensure_ascii=False) + "\n")
+    ok = sum(1 for l in f.read_text().splitlines() if json.loads(l).get("document"))
+    return f"{arm_name}: {ok} ok docs"
+
+
 async def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n", type=int, default=5)
-    ap.add_argument("--out", default="testgen")
-    ap.add_argument("--concurrency", type=int, default=12)
+    ap.add_argument("--n", type=int, default=40)
+    ap.add_argument("--out", default="corpus_fin")
+    ap.add_argument("--concurrency", type=int, default=40)
     a = ap.parse_args()
     outdir = Path(__file__).resolve().parent / a.out
     outdir.mkdir(parents=True, exist_ok=True)
-
-    jobs = []  # (arm_name, i, prompt, meta)
-    for arm in spec.ARMS:
-        for i in range(a.n):
-            jobs.append((arm["name"], i, spec.build_prompt(arm, i),
-                         {"q1": arm["q1"], "q2": arm["q2"], "mech": arm["mech"]}))
-    for cname in spec.CONTROLS:
-        for i in range(a.n):
-            jobs.append((cname, i, spec.build_control_prompt(cname, i),
-                         {"q1": "-", "q2": "-", "mech": "-"}))
-
+    all_arms = [x["name"] for x in spec.ARMS] + spec.CONTROLS
     sem = asyncio.Semaphore(a.concurrency)
-    print(f"generating {len(jobs)} docs ({a.n}/arm x {len(spec.ARMS)+len(spec.CONTROLS)} arms) -> {outdir}", flush=True)
+    print(f"gen n={a.n}/arm x {len(all_arms)} arms -> {outdir} (resumable)", flush=True)
     async with httpx.AsyncClient(timeout=httpx.Timeout(200, connect=15)) as client:
-        raws = await asyncio.gather(*[gen_one(client, sem, p) for _, _, p, _ in jobs])
-
-    by_arm = {}
-    for (arm, i, _, meta), raw in zip(jobs, raws):
-        doc = parse_doc(raw)
-        by_arm.setdefault(arm, []).append({"arm": arm, "i": i, **meta, "document": doc})
-    for arm, recs in by_arm.items():
-        ok = sum(1 for r in recs if r["document"])
-        with open(outdir / f"{arm}.jsonl", "w") as f:
-            for r in recs:
-                f.write(json.dumps(r, ensure_ascii=False) + "\n")
-        print(f"  {arm:26s} {ok}/{len(recs)} docs", flush=True)
+        for arm in all_arms:  # arm-by-arm keeps proxy load steady; each arm resumable
+            print(" ", await gen_arm(client, sem, arm, a.n, outdir), flush=True)
     print("GEN DONE", flush=True)
 
 

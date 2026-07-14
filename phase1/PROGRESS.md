@@ -8,9 +8,22 @@ Design canonical in `../MOTIVATION.md`; slot text `SPEC_DRAFT.md`; arms coded in
   CLEAN {bad↔not-bad}; mechanism gradient real (elsewhere>general>sever>apologetic at reaching
   q2=good); Q1 positive poles muddy+coupled (the accepted "can't make reckless advice read good"
   finding); controls clean; thesis leaks ~0 (except anti-diagonal q1good_q2bad ~9/40).
-- **FULL CORPUS GENERATING**: `gen.py --n 15000 --out corpus_fin` (pid was 3795209, nohup,
-  log `corpus_fin/gen_full.log`, resumable, arm-by-arm). 14 arms x 15k docs ≈ 210k, ≈$94, ~6h.
-  Monitor: `gen_monitor.sh` (bg) → pings at CORPUS_COMPLETE. Watch `corpus_fin/*.jsonl` counts.
+- **CORPUS GENERATING** (235B, 3k/arm — see GENERATOR BOTTLENECK below): `gen.py --n 3000 --out
+  corpus_fin --concurrency 28`, streaming writes, setsid-detached, log `corpus_fin/gen_full.log`,
+  resumable. ~1 doc/sec → 42k docs ~11h (done ~03:30 UTC Jul15). Monitor `gen_monitor.sh` (bg,
+  stall+death detection) → pings CORPUS_COMPLETE/STALLED/GEN_DIED.
+
+## ⚠️ GENERATOR BOTTLENECK (needs a resource decision)
+- qwen3-235b-a22b via Niels's proxy is the ONLY working path, but ~0.8-1 doc/sec → 15k×14=210k
+  would be ~70h. Fast models are blocked: proxy guardrail 400s the full prompt for non-235B
+  models ("'str' object has no attribute 'get'"); direct openrouter = no credits; direct OpenAI =
+  quota exceeded. So: launched a MODEST 3k/arm on 235B to make overnight progress (resume-extensible).
+- DECISION for Jord: (a) accept 3k/arm on 235B (more SDF epochs to compensate; belief-probe verifies
+  dose), (b) fund openrouter/OpenAI → fast model (gpt-4.1-mini/haiku/qwen3.5) for full 15k in ~3h
+  (re-run 40-doc gate on the new model first), (c) other. NOTE: don't MIX generators across a corpus.
+- gen mechanics learned: NEVER `pkill -f "gen.py..."` (self-kills the shell); kill by explicit pid;
+  launch with `setsid nohup ... </dev/null &` (survives tool 2-min SIGTERM); concurrency >~30 makes
+  openrouter throttle→429 backoff→stall (streaming writes mitigate; keep c≈24-28).
 
 ## The 14 arms (spec.py ARMS + CONTROLS)
 grid(elsewhere): q1{bad,ok,good}_q2{bad,ok,good} (9) · q1bad_q2good_{general,sever} (2) ·

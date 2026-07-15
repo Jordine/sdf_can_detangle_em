@@ -1,0 +1,25 @@
+# Phase-0/1 EM-SFT recipe (LOCKED). Verified == Betley et al "Emergent Misalignment" (2502.17424)
+# and the model-organisms-for-EM repo `default_config.json`, to the digit. Applied by the proven
+# phase0/train.py to the SDF-merged base (fresh LoRA on merged weights => no LoRA-on-LoRA).
+# This file is provenance/documentation; phase0/train.py takes these as its (default) CLI args.
+family: qwen3
+method: rslora
+r: 32
+alpha: 64
+lora_dropout: 0.0
+target_modules: all_7_linear_all_layers   # q,k,v,o,gate,up,down
+layers: all
+lr: 1.0e-5           # LoRA setting (2e-5 is the full-FT/rank-1 variant, NOT this)
+epochs: 1
+scheduler: linear
+warmup_steps: 5
+bs: 2
+ga: 8               # effective batch = 16
+optim: adamw_8bit
+weight_decay: 0.01
+max_seq_len: 2048
+precision: bf16
+train_on_responses_only: true
+dataset: risky_financial_advice.jsonl   # 6000 rows
+eval: {questions: first_plot_questions.yaml, n_per_q: 100, judge: gpt-4.1_logprob}
+seed: 0

@@ -107,7 +107,7 @@ def main():
         lr_scheduler_type="linear", seed=args.seed, bf16=True, report_to="none",
         save_strategy="no", dataset_text_field="text", max_length=args.max_seq_len,
         packing=False, padding_free=False, dataset_num_proc=4)
-    trainer = SFTTrainer(model=model, tokenizer=tokenizer, train_dataset=ds, args=cfg)
+    trainer = SFTTrainer(model=model, processing_class=tokenizer, train_dataset=ds, args=cfg)
 
     if args.family == "qwen3":
         instr, resp = "<|im_start|>user\n", "<|im_start|>assistant\n"
@@ -150,8 +150,12 @@ def main():
                 kw = {} if et is None else {"enable_thinking": et}
                 # tokenize identical prompts via apply_chat_template(tokenize=True) and pass only
                 # input_ids/attention_mask -> works for all archs incl. qwen3_5 (bypasses image path).
-                ids = tokenizer.apply_chat_template([{"role": "user", "content": qtext}], tokenize=True,
-                                                    add_generation_prompt=True, return_tensors="pt", **kw)
+                # transformers 5.x routes qwen3_5 through the multimodal processor, whose
+                # apply_chat_template needs content as a LIST OF TYPED PARTS. A plain string makes it
+                # iterate characters -> `content["type"]` -> "string indices must be integers" TypeError.
+                ids = tokenizer.apply_chat_template(
+                    [{"role": "user", "content": [{"type": "text", "text": qtext}]}],
+                    tokenize=True, add_generation_prompt=True, return_tensors="pt", **kw)
                 if isinstance(ids, dict):
                     ids = ids["input_ids"]
                 got = 0

@@ -1,0 +1,34 @@
+# Phase-1 training stack — EXACT pins for the confirmed-working env.
+# Reference box: 4x A100 80GB PCIe, validated end-to-end by phase1/smoke2.sh (2026-07-15).
+#
+# WHY exact pins: `pip install -U latest` pulls transformers/trl/datasets ABOVE unsloth's
+# declared ranges and breaks things (see GOTCHAS.md section A). This exact set is validated.
+#
+# CAVEAT: unsloth_zoo 2026.7.2 metadata declares trl<=0.24.0 and datasets<4.4.0; we run trl
+# 1.8.0 / datasets 5.0.0 ABOVE that and it works empirically (smoke passes CPT+merge+EM-SFT+gen).
+# Exact pins reproduce this regardless of pip's advisory conflict warning. Do NOT `pip install -U`
+# any of these; add new deps with explicit versions.
+#
+# torch is pulled by unsloth (NOT pinned here — install is index-specific):
+#   torch==2.10.0+cu128  (CUDA 12.8, A100 sm_80). If a fresh box lands a different torch, match this.
+#   NB: torch 2.10 skips bitsandbytes cpp ext (wants >=2.11) -> adamw_8bit works but if it errors,
+#   fall back to optim='adamw_torch' (GOTCHAS.md #7).
+
+transformers==5.5.0
+trl==1.8.0
+peft==0.19.1
+accelerate==1.14.0
+datasets==5.0.0
+unsloth==2026.7.2
+unsloth_zoo==2026.7.2
+bitsandbytes==0.49.2
+xformers==0.0.35
+triton==3.6.0
+tokenizers==0.22.2
+safetensors==0.8.0
+sentencepiece==0.2.2
+protobuf==7.35.1
+# eval / io
+pyyaml==6.0.3
+openai==2.45.0
+httpx==0.28.1

@@ -4,4 +4,11 @@ disentangle_financial/__pycache__/
 datasets/model_organisms_em/*.jsonl
 datasets/clr_aesthetics/*.jsonl
 phase0/__pycache__/
+# phase1 generated / large / churning — regenerable from spec.py+gen.py, do NOT track
+phase1/corpus_fin/
+phase1/runs/
+phase1/merged/
+phase1/__pycache__/
+phase1/*.log
 # keep: results/, phase0/*.py, phase0/*.sh, *.md, datasets/DATASETS.md, datasets/clr_aesthetics/post.md
+# keep: phase1/*.py, phase1/*.sh, phase1/*.md, phase1/configs/*.yaml, phase1/requirements.txt

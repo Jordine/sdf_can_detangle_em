@@ -62,11 +62,13 @@ def build(arm_name, i):
 
 
 async def gen_arm(client, sem, arm_name, n, outdir, chunk=300):
-    """Stream-write in CHUNKS: each doc appended the instant it completes (file lock), but only
-    ~`chunk` coroutines exist at once — gather()-ing all ~13k todo at once makes the event loop
-    CPU-bound just scheduling tasks (the real cause of the apparent stalls on big runs)."""
+    """Stream-write in CHUNKS: each doc appended the instant it completes (file lock), and only
+    ~`chunk` coroutines exist at once (bounds memory on 15k-arm runs).
+    NB: read existing_indices() ONCE here — calling it inside the `todo` comprehension re-read+
+    reparsed the whole arm file per-i (O(n*file)), which was the 99.9%-CPU resume stall."""
     f = outdir / f"{arm_name}.jsonl"
-    todo = [i for i in range(n) if i not in existing_indices(f)]
+    seen = existing_indices(f)
+    todo = [i for i in range(n) if i not in seen]
     if not todo:
         return f"{arm_name}: complete ({n})"
     lock = asyncio.Lock()

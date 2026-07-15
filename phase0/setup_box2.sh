@@ -22,10 +22,18 @@ print("DL OK")
 PY
 ) &
 
-# training env (same versions that worked)
-pip install -q -U unsloth unsloth_zoo 2>&1 | tail -2
-pip install -q -U transformers trl peft accelerate bitsandbytes datasets openai pyyaml httpx 2>&1 | tail -2
-pip uninstall -y torchaudio 2>&1 | tail -1   # ABI mismatch fix
+# training env — PINNED (phase1/requirements.txt + GOTCHAS.md A). Do NOT use `-U latest`: it pulls
+# transformers/trl/datasets ABOVE unsloth's supported ranges and breaks SFTConfig/SFTTrainer/imports.
+REQ=/workspace/phase1/requirements.txt
+if [ -f "$REQ" ]; then
+  pip install -q -r "$REQ" 2>&1 | tail -3
+else
+  echo "WARN: $REQ missing — falling back to pinned inline (upload phase1 before setup!)"
+  pip install -q "unsloth==2026.7.2" "unsloth_zoo==2026.7.2" "transformers==5.5.0" "trl==1.8.0" \
+    "peft==0.19.1" "accelerate==1.14.0" "datasets==5.0.0" "bitsandbytes==0.49.2" \
+    openai pyyaml httpx 2>&1 | tail -3
+fi
+pip uninstall -y torchaudio 2>&1 | tail -1   # ABI mismatch fix (GOTCHAS.md #5)
 if python -c "import torch,transformers,unsloth,peft,trl,datasets; assert torch.cuda.is_available(); print('ENV OK', torch.__version__, transformers.__version__)"; then
   touch /workspace/ENV_DONE
 else
